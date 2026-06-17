@@ -6,9 +6,13 @@ CREATE TABLE IF NOT EXISTS users (
   email         TEXT NOT NULL UNIQUE,
   password_hash TEXT NOT NULL,
   full_name     TEXT NOT NULL,
-  role          TEXT NOT NULL CHECK (role IN ('student', 'teacher')),
+  role          TEXT NOT NULL CHECK (role IN ('student', 'teacher', 'admin')),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Keep the role check in sync on existing databases (idempotent).
+ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check;
+ALTER TABLE users ADD CONSTRAINT users_role_check CHECK (role IN ('student', 'teacher', 'admin'));
 
 CREATE TABLE IF NOT EXISTS groups (
   id   SERIAL PRIMARY KEY,

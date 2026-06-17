@@ -11,10 +11,18 @@ import { pool, query, withTransaction } from '../config/db';
  *   student@demo  / student123   (+ ivanov / petrova / sidorov, same password)
  */
 async function seed() {
+  // Admin is created (idempotently) even on an already-seeded database.
+  const adminHash = await bcrypt.hash('admin123', 10);
+  await query(
+    `INSERT INTO users (email, password_hash, full_name, role)
+     VALUES ($1, $2, $3, 'admin') ON CONFLICT (email) DO NOTHING`,
+    ['admin@demo', adminHash, 'Администратор']
+  );
+
   const existing = await query('SELECT 1 FROM users WHERE email = $1', ['teacher@demo']);
   if (existing.rowCount > 0) {
     // eslint-disable-next-line no-console
-    console.log('Seed skipped — demo data already present.');
+    console.log('Seed skipped — demo data already present (admin ensured).');
     await pool.end();
     return;
   }
@@ -112,6 +120,7 @@ async function seed() {
   // eslint-disable-next-line no-console
   console.log('✓ Seed completed.');
   // eslint-disable-next-line no-console
+  console.log('  Admin:   admin@demo / admin123');
   console.log('  Teacher: teacher@demo / teacher123');
   console.log('  Student: student@demo / student123');
   await pool.end();

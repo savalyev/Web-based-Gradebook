@@ -80,18 +80,25 @@ export default function Login() {
 
         <div className="mt-4 rounded-lg border border-gray-100 bg-white p-4 text-sm">
           <p className="mb-2 font-medium text-gray-600">Демо-доступ:</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => fill('admin@demo', 'admin123')}
+              className="btn-secondary !px-2 text-xs"
+            >
+              Админ
+            </button>
             <button
               type="button"
               onClick={() => fill('teacher@demo', 'teacher123')}
-              className="btn-secondary"
+              className="btn-secondary !px-2 text-xs"
             >
-              Преподаватель
+              Препод.
             </button>
             <button
               type="button"
               onClick={() => fill('student@demo', 'student123')}
-              className="btn-secondary"
+              className="btn-secondary !px-2 text-xs"
             >
               Студент
             </button>

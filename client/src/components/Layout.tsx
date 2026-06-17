@@ -9,6 +9,10 @@ import {
   Menu,
   X,
   FlaskConical,
+  Users,
+  Library,
+  BookMarked,
+  Layers,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -28,11 +32,26 @@ const teacherNav: NavItem[] = [
   { to: '/courses', label: 'Журнал', icon: <BookOpen className="h-5 w-5" /> },
 ];
 
+const adminNav: NavItem[] = [
+  { to: '/admin/users', label: 'Пользователи', icon: <Users className="h-5 w-5" /> },
+  { to: '/admin/groups', label: 'Группы', icon: <Layers className="h-5 w-5" /> },
+  { to: '/admin/subjects', label: 'Предметы', icon: <Library className="h-5 w-5" /> },
+  { to: '/admin/courses', label: 'Курсы', icon: <BookMarked className="h-5 w-5" /> },
+  { to: '/admin/schedule', label: 'Расписание', icon: <CalendarDays className="h-5 w-5" /> },
+];
+
+const ROLE_LABELS: Record<string, string> = {
+  teacher: 'Преподаватель',
+  student: 'Студент',
+  admin: 'Администратор',
+};
+
 export default function Layout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const nav = user?.role === 'teacher' ? teacherNav : studentNav;
+  const nav =
+    user?.role === 'teacher' ? teacherNav : user?.role === 'admin' ? adminNav : studentNav;
 
   const handleLogout = async () => {
     await logout();
@@ -79,9 +98,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{user?.fullName}</p>
-            <p className="text-xs text-gray-400">
-              {user?.role === 'teacher' ? 'Преподаватель' : 'Студент'}
-            </p>
+            <p className="text-xs text-gray-400">{ROLE_LABELS[user?.role ?? ''] ?? ''}</p>
           </div>
         </div>
         <button onClick={handleLogout} className="btn-ghost w-full justify-start">

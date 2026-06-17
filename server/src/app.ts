@@ -13,6 +13,7 @@ import assignmentRoutes from './modules/assignments/assignments.routes';
 import submissionRoutes from './modules/submissions/submissions.routes';
 import fileRoutes from './modules/files/files.routes';
 import analyticsRoutes from './modules/analytics/analytics.routes';
+import adminRoutes from './modules/admin/admin.routes';
 
 export function createApp() {
   const app = express();
@@ -32,6 +33,7 @@ export function createApp() {
   app.use('/api/submissions', submissionRoutes);
   app.use('/api/files', fileRoutes);
   app.use('/api/analytics', analyticsRoutes);
+  app.use('/api/admin', adminRoutes);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
