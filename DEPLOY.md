@@ -56,7 +56,7 @@ SQL
 ```bash
 cd /var/www/gradebook/server
 sudo -u gradebook cp .env.production.example .env
-# Сгенерировать JWT-секрет:
+# Сгенерировать JWT-секрет (вывод вставить в .env как JWT_SECRET):
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 sudo -u gradebook nano .env
 ```
