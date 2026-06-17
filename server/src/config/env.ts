@@ -21,4 +21,8 @@ export const env = {
   uploadDir: path.resolve(process.cwd(), process.env.UPLOAD_DIR ?? '../uploads'),
   maxUploadBytes: Number(process.env.MAX_UPLOAD_MB ?? 20) * 1024 * 1024,
   isProd: (process.env.NODE_ENV ?? 'development') === 'production',
+  // Built client to serve in production (single-origin). Defaults to ../client/dist.
+  clientDist: path.resolve(process.cwd(), process.env.CLIENT_DIST ?? '../client/dist'),
+  // Number of reverse proxies in front (nginx) — needed for secure cookies & rate-limit IPs.
+  trustProxy: Number(process.env.TRUST_PROXY ?? 0),
 };

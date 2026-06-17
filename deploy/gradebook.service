@@ -1,0 +1,21 @@
+[Unit]
+Description=Gradebook API (Node/Express, serves SPA + REST)
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=gradebook
+WorkingDirectory=/var/www/gradebook/server
+# .env in WorkingDirectory is loaded by the app (dotenv).
+# ExecStart uses node from PATH; if needed replace with the output of `which node`.
+ExecStart=/usr/bin/node dist/server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+# Allow writing only to the uploads directory.
+ProtectSystem=full
+ReadWritePaths=/var/www/gradebook/uploads
+
+[Install]
+WantedBy=multi-user.target

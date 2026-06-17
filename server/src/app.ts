@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -21,6 +23,9 @@ import exportRoutes from './modules/export/export.routes';
 export function createApp() {
   const app = express();
 
+  // Behind nginx in production: required for secure cookies & correct client IPs.
+  if (env.trustProxy > 0) app.set('trust proxy', env.trustProxy);
+
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
   app.use(cors({ origin: env.clientOrigin, credentials: true }));
   app.use(express.json());
@@ -41,7 +46,18 @@ export function createApp() {
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/export', exportRoutes);
 
-  app.use(notFoundHandler);
+  // Unknown API routes → JSON 404.
+  app.use('/api', notFoundHandler);
+
+  // Serve the built client (single-origin) with SPA fallback, if present.
+  if (fs.existsSync(env.clientDist)) {
+    app.use(express.static(env.clientDist));
+    app.get('*', (req, res, next) => {
+      if (req.path.startsWith('/api')) return next();
+      res.sendFile(path.join(env.clientDist, 'index.html'));
+    });
+  }
+
   app.use(errorHandler);
 
   return app;
