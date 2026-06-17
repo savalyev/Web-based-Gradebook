@@ -6,6 +6,7 @@ import { PageLoader } from './components/ui';
 import { Role } from './types';
 
 import Login from './pages/Login';
+import Profile from './pages/Profile';
 import StudentHome from './pages/student/StudentHome';
 import StudentJournal from './pages/student/StudentJournal';
 import StudentSubject from './pages/student/StudentSubject';
@@ -58,6 +59,9 @@ export default function App() {
       <Route path="/courses/:courseId/journal" element={<Protected role="teacher"><TeacherJournal /></Protected>} />
       <Route path="/courses/:courseId/program" element={<Protected role="teacher"><CourseProgram /></Protected>} />
       <Route path="/courses/:courseId/labs" element={<Protected role="teacher"><LabReview /></Protected>} />
+
+      {/* Profile — any authenticated role */}
+      <Route path="/profile" element={<Protected><Profile /></Protected>} />
 
       {/* Admin */}
       <Route path="/admin/users" element={<Protected role="admin"><AdminUsers /></Protected>} />

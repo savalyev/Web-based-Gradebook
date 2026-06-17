@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen, ChevronRight, FileSpreadsheet, Printer } from 'lucide-react';
 import { api, apiError } from '../../api/client';
 import { Attendance } from '../../types';
 import { PageHeader } from '../../components/Layout';
@@ -53,6 +53,16 @@ export default function StudentJournal() {
         title="Электронный журнал"
         subtitle="Оценки и посещаемость по всем предметам"
         icon={<BookOpen className="h-6 w-6" />}
+        actions={
+          <div className="no-print flex gap-2">
+            <a href="/api/export/student-journal" className="btn-secondary">
+              <FileSpreadsheet className="h-4 w-4" /> Excel
+            </a>
+            <button onClick={() => window.print()} className="btn-secondary">
+              <Printer className="h-4 w-4" /> PDF
+            </button>
+          </div>
+        }
       />
 
       {courses.length === 0 ? (

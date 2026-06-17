@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 import {
   CalendarDays,
   BookOpen,
@@ -92,7 +93,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       </nav>
 
       <div className="border-t border-gray-100 p-3">
-        <div className="mb-2 flex items-center gap-3 px-3 py-2">
+        <Link
+          to="/profile"
+          onClick={() => setOpen(false)}
+          className="mb-2 flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-gray-100"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-100 text-sm font-semibold text-brand-700">
             {user?.fullName?.[0] ?? '?'}
           </div>
@@ -100,7 +105,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <p className="truncate text-sm font-medium">{user?.fullName}</p>
             <p className="text-xs text-gray-400">{ROLE_LABELS[user?.role ?? ''] ?? ''}</p>
           </div>
-        </div>
+        </Link>
         <button onClick={handleLogout} className="btn-ghost w-full justify-start">
           <LogOut className="h-4 w-4" /> Выйти
         </button>
@@ -124,11 +129,14 @@ export default function Layout({ children }: { children: ReactNode }) {
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-gray-100 bg-white px-4 py-3 lg:hidden">
-          <button onClick={() => setOpen(true)} className="rounded-md p-1.5 hover:bg-gray-100">
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        <header className="flex items-center gap-3 border-b border-gray-100 bg-white px-4 py-2.5">
+          <button onClick={() => setOpen(true)} className="rounded-md p-1.5 hover:bg-gray-100 lg:hidden">
+            <Menu className="h-6 w-6" />
           </button>
-          <span className="font-semibold">Электронный журнал</span>
+          <span className="font-semibold lg:hidden">Электронный журнал</span>
+          <div className="ml-auto flex items-center gap-1">
+            <NotificationBell />
+          </div>
         </header>
         <main className="flex-1 overflow-x-hidden p-4 sm:p-6 lg:p-8">{children}</main>
       </div>

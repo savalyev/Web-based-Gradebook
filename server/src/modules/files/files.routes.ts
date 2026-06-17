@@ -7,7 +7,7 @@ import { query } from '../../config/db';
 import { asyncHandler } from '../../utils/async';
 import { requireAuth } from '../../middleware/auth';
 import { env } from '../../config/env';
-import { notFound, forbidden } from '../../utils/errors';
+import { notFound, forbidden, HttpError } from '../../utils/errors';
 
 const router = Router();
 
@@ -18,7 +18,24 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}_${crypto.randomBytes(6).toString('hex')}${ext}`);
   },
 });
-const upload = multer({ storage, limits: { fileSize: env.maxUploadBytes } });
+
+// Allowlist of extensions accepted for lab solutions / materials.
+const ALLOWED_EXT = new Set([
+  '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.md', '.csv',
+  '.zip', '.rar', '.7z', '.tar', '.gz',
+  '.png', '.jpg', '.jpeg', '.gif', '.webp',
+  '.js', '.ts', '.py', '.java', '.c', '.cpp', '.cs', '.sql', '.json', '.ipynb',
+]);
+
+const upload = multer({
+  storage,
+  limits: { fileSize: env.maxUploadBytes },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ALLOWED_EXT.has(ext)) return cb(null, true);
+    cb(new HttpError(400, `Недопустимый тип файла: ${ext || 'без расширения'}`));
+  },
+});
 
 /** POST /api/files — upload one file, returns its metadata record. */
 router.post(

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, FlaskConical, Download, ExternalLink, Users, User } from 'lucide-react';
+import { ArrowLeft, FlaskConical, Download, ExternalLink, Users, User, FileSpreadsheet } from 'lucide-react';
 import { api, apiError } from '../../api/client';
 import { Submission } from '../../types';
 import { PageHeader } from '../../components/Layout';
@@ -38,6 +38,11 @@ export default function LabReview() {
         title="Сдача работ"
         subtitle={course ? `${course.subject} · ${course.group_name}` : ''}
         icon={<FlaskConical className="h-6 w-6" />}
+        actions={
+          <a href={`/api/export/submissions/${courseId}`} className="no-print btn-secondary">
+            <FileSpreadsheet className="h-4 w-4" /> Excel
+          </a>
+        }
       />
 
       {subs.length === 0 ? (

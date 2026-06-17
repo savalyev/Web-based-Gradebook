@@ -43,6 +43,28 @@
   }
 }
 
+/* Print / "Save as PDF": show only the content area. */
+@media print {
+  aside,
+  header,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  body {
+    background: #fff !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border-color: #e5e7eb !important;
+  }
+  table {
+    font-size: 11px !important;
+  }
+}
+
 /* Journal grid cross-highlight (row + column on hover) */
 .journal-cell.cell-hl-row,
 .journal-cell.cell-hl-col {

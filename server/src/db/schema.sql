@@ -152,6 +152,21 @@ CREATE TABLE IF NOT EXISTS submission_files (
   PRIMARY KEY (submission_id, file_id)
 );
 
+-- In-app notifications (grade given, work reviewed, deadline approaching).
+CREATE TABLE IF NOT EXISTS notifications (
+  id         SERIAL PRIMARY KEY,
+  user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type       TEXT NOT NULL CHECK (type IN ('grade', 'review', 'deadline', 'info')),
+  title      TEXT NOT NULL,
+  body       TEXT,
+  link       TEXT,
+  ref_id     INTEGER,
+  is_read    BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (user_id, type, ref_id)
+);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read);
+
 -- Helpful indexes
 CREATE INDEX IF NOT EXISTS idx_courses_teacher ON courses(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_courses_group ON courses(group_id);

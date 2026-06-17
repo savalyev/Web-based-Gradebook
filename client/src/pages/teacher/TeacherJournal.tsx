@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Plus, BarChart3, Info } from 'lucide-react';
+import { ArrowLeft, Plus, BarChart3, Info, FileSpreadsheet, Printer } from 'lucide-react';
 import { api, apiError } from '../../api/client';
 import { GradeEntry, JournalLesson, JournalStudent } from '../../types';
 import { PageHeader } from '../../components/Layout';
@@ -90,7 +90,13 @@ export default function TeacherJournal() {
         title="Журнал"
         subtitle="ЛКМ — оценка · средняя кнопка — опоздание · правая кнопка — отсутствие"
         actions={
-          <div className="flex gap-2">
+          <div className="no-print flex flex-wrap gap-2">
+            <a href={`/api/export/journal/${courseId}`} className="btn-secondary">
+              <FileSpreadsheet className="h-4 w-4" /> Excel
+            </a>
+            <button onClick={() => window.print()} className="btn-secondary">
+              <Printer className="h-4 w-4" /> PDF
+            </button>
             {groupId && (
               <button onClick={() => setShowStats(true)} className="btn-secondary">
                 <BarChart3 className="h-4 w-4" /> Графики

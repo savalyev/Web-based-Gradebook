@@ -7,6 +7,7 @@ import { validate } from '../../middleware/validate';
 import { assertTeacherOwnsCourse } from '../../utils/access';
 import { notFound, forbidden } from '../../utils/errors';
 import { detectAttendance } from '../../utils/timing';
+import { notify } from '../../utils/notify';
 
 const router = Router();
 router.use(requireAuth, requireRole('teacher'));
@@ -75,6 +76,23 @@ router.put(
         grade !== undefined, // only overwrite grade when the field was provided
       ]
     );
+
+    // Notify the student when an actual grade is set.
+    if (grade != null) {
+      const subj = await query(
+        `SELECT subj.name FROM courses c JOIN subjects subj ON subj.id = c.subject_id WHERE c.id = $1`,
+        [lesson.rows[0].course_id]
+      );
+      await notify({
+        userId: studentId,
+        type: 'grade',
+        title: 'Новая оценка',
+        body: `${subj.rows[0]?.name ?? 'Предмет'}: ${grade}`,
+        link: `/subject/${lesson.rows[0].course_id}`,
+        refId: lessonId,
+      });
+    }
+
     res.json({ entry: rows[0] });
   })
 );

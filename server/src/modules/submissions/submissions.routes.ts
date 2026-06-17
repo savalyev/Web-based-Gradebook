@@ -6,6 +6,7 @@ import { requireAuth, requireRole } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
 import { assertTeacherOwnsCourse, assertStudentInCourse } from '../../utils/access';
 import { notFound } from '../../utils/errors';
+import { notify } from '../../utils/notify';
 
 const router = Router();
 router.use(requireAuth);
@@ -130,7 +131,30 @@ router.put(
        WHERE id = $4 RETURNING *`,
       [grade ?? null, comment ?? null, req.user!.id, id]
     );
-    res.json({ submission: rows[0] });
+
+    // Notify the submitter(s): personal student or all teammates.
+    const sub = rows[0];
+    const info = await query(
+      `SELECT a.id AS assignment_id, a.title FROM assignments a WHERE a.id = $1`,
+      [sub.assignment_id]
+    );
+    const recipients: number[] = sub.student_id
+      ? [sub.student_id]
+      : (
+          await query('SELECT student_id FROM team_members WHERE team_id = $1', [sub.team_id])
+        ).rows.map((r: any) => r.student_id);
+    for (const uid of recipients) {
+      await notify({
+        userId: uid,
+        type: 'review',
+        title: 'Работа проверена',
+        body: `${info.rows[0]?.title ?? 'Работа'}${sub.grade != null ? `: ${sub.grade}` : ''}`,
+        link: `/lab/${info.rows[0]?.assignment_id}`,
+        refId: sub.id,
+      });
+    }
+
+    res.json({ submission: sub });
   })
 );
 
