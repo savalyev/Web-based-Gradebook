@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    container_name: gradebook_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gradebook
+      POSTGRES_PASSWORD: gradebook
+      POSTGRES_DB: gradebook
+    ports:
+      - "5432:5432"
+    volumes:
+      - gradebook_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradebook -d gradebook"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  gradebook_pgdata:
